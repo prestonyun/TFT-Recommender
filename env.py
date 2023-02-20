@@ -13,6 +13,8 @@ class TFTGameState:
         self.level = level
         self.opponents = opponents
 
+        self.champion_stats = _utils.read_champions()
+
 
 class TFTGameActions:
     @staticmethod
@@ -96,9 +98,36 @@ class TFTGameActions:
             return True
         else:
             return False
-def main():
-    champs = _utils.read_champions()
-    print(champs)
 
-if __name__ == "__main__":
-    main()
+class TFTEnvironment:
+    def __init__(self, game_state):
+        self.game_state = game_state
+        self.reward = 0
+        
+    def step(self, action):
+        if action == "refresh_shop":
+            self.game_state.refresh_shop()
+        elif action == "buy_exp":
+            self.game_state.buy_exp()
+        elif action.startswith("buy_champ_"):
+            champ_name = action.split("_")[2]
+            self.game_state.buy_champion(champ_name)
+        elif action.startswith("sell_champ_"):
+            champ_name = action.split("_")[2]
+            self.game_state.sell_champion(champ_name)
+        elif action.startswith("move_champ_"):
+            _, champ_name, destination_row, destination_column = action.split("_")
+            destination_row, destination_column = int(destination_row), int(destination_column)
+            self.game_state.move_champion(champ_name, destination_row, destination_column)
+        elif action.startswith("buy_item_"):
+            item_name = action.split("_")[2]
+            self.game_state.buy_item(item_name)
+        elif action.startswith("sell_item_"):
+            item_name = action.split("_")[2]
+            self.game_state.sell_item(item_name)
+        
+        self.reward = self.game_state.calculate_reward()
+        observation = self.game_state.get_observation()
+        done = self.game_state.is_terminal()
+        
+        return observation, self.reward, done
