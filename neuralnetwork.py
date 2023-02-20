@@ -50,19 +50,19 @@ class Transformer(nn.Module):
         return x
 
 class RNN(nn.Module):
-    def __init__(self, input_size, hidden_size, num_layers, dropout):
+    def __init__(self, input_dim, hidden_dim, num_layers, dropout):
         super(RNN, self).__init__()
-        self.hidden_size = hidden_size
+        self.hidden_dim = hidden_dim
         self.num_layers = num_layers
         self.dropout = nn.Dropout(dropout)
-        self.rnn = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True, dropout=dropout)
+        self.rnn = nn.LSTM(input_dim, hidden_dim, num_layers, batch_first=True, dropout=dropout)
 
     def forward(self, x, h=None):
         batch_size = x.size(0)
 
         if h is None:
-            h0 = torch.zeros(self.num_layers, batch_size, self.hidden_size).to(x.device)
-            c0 = torch.zeros(self.num_layers, batch_size, self.hidden_size).to(x.device)
+            h0 = torch.zeros(self.num_layers, batch_size, self.hidden_dim).to(x.device)
+            c0 = torch.zeros(self.num_layers, batch_size, self.hidden_dim).to(x.device)
         else:
             h0, c0 = h
 
@@ -72,16 +72,16 @@ class RNN(nn.Module):
 
 
 class DQNAgent(nn.Module):
-    def __init__(self, input_size, output_size, hidden_size=128):
+    def __init__(self, input_size, output_size, hidden_dim=128):
         super(DQNAgent, self).__init__()
 
         self.input_size = input_size
         self.output_size = output_size
-        self.hidden_size = hidden_size
+        self.hidden_dim = hidden_dim
 
-        self.fc1 = nn.Linear(input_size, hidden_size)
-        self.fc2 = nn.Linear(hidden_size, hidden_size)
-        self.fc3 = nn.Linear(hidden_size, output_size)
+        self.fc1 = nn.Linear(input_size, hidden_dim)
+        self.fc2 = nn.Linear(hidden_dim, hidden_dim)
+        self.fc3 = nn.Linear(hidden_dim, output_size)
 
     def forward(self, x):
         x = torch.relu(self.fc1(x))
@@ -164,10 +164,10 @@ class ReplayBuffer:
         return len(self.buffer)
 
 class TFTRecommender:
-    def __init__(self, n_champions, n_items, n_actions, device='cpu'):
-        self.transformer = Transformer(n_champions, n_items).to(device)
-        self.rnn = RNN(n_champions + n_items).to(device)
-        self.dqn = DQNAgent(self.rnn.hidden_size, n_actions).to(device)
+    def __init__(self, input_dim, hidden_dim, n_actions, device='cpu'):
+        self.transformer = Transformer(input_dim=256, hidden_dim=512, num_layers=6, num_heads=8).to(device)
+        self.rnn = RNN(input_dim=256, hidden_dim=512, num_layers=8, dropout=0.2).to(device)
+        self.dqn = DQNAgent(self.rnn.hidden_dim, n_actions).to(device)
         self.device = device
 
     def recommend_action(self, game_state):
@@ -215,3 +215,32 @@ class TFTRecommender:
         optimizer.step()
 
         self.replay_buffer.clear()
+
+    def train(env, recommender, buffer, batch_size=32, gamma=0.99, epsilon_start=1.0, epsilon_end=0.01, epsilon_decay=0.995):
+        epsilon = epsilon_start
+        while True:
+            # Get current game state
+            game_state = env.get_state()
+            
+            # Choose action using epsilon-greedy policy
+            action = None
+            if random.random() < epsilon:
+                action = env.get_random_action()
+            else:
+                action = recommender.recommend_action(game_state)
+            
+            # Take action and observe new state and reward
+            new_state, reward, done = env.step(action)
+            
+            # Add transition to replay buffer
+            buffer.add(game_state, action, reward, new_state, done)
+            
+            # Sample batch from replay buffer
+            batch = buffer.sample(batch_size)
+            
+            # Update recommender using DQN
+            recommender.update(batch, gamma)
+            
+            # Decay epsilon
+            epsilon *= epsilon_decay
+            epsilon = max(epsilon, epsilon_end)

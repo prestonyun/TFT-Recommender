@@ -4,11 +4,12 @@ import numpy as np
 
 from env import *
 from neuralnetwork import *
+from _utils import *
 
 def main():
     # Set up the environment and network
-    env = TFTEnvironment()
-    recommender = TFTRecommender()
+    env = TFTEnvironment(get_game_state())
+    recommender = TFTRecommender(1, 1, None)
     num_episodes = 1000
 
     # Set up hyperparameters
@@ -43,9 +44,9 @@ def main():
         while not done:
             # Choose action
             if np.random.uniform() < epsilon:
-                action = env.get_random_action()
+                action = env.get_random_action(state)
             else:
-                action = recommender.get_action(state)
+                action = recommender.get_action()
             
             # Take action and get next state, reward, and done flag
             next_state, reward, done = env.step(action)
@@ -88,3 +89,6 @@ def main():
         # Print progress every 10 episodes
         if i % 10 == 0:
             print("Episode {}: Total reward = {}".format(i, total_reward))
+
+if __name__ == '__main__':
+    main()

@@ -119,7 +119,7 @@ class TFTEnvironment:
             _, champ_name, destination_row, destination_column = action.split("_")
             destination_row, destination_column = int(destination_row), int(destination_column)
             self.game_state.move_champion(champ_name, destination_row, destination_column)
-        elif action.startswith("buy_item_"):
+        elif action.startswith("buy_item_"): #fix this
             item_name = action.split("_")[2]
             self.game_state.buy_item(item_name)
         elif action.startswith("sell_item_"):
