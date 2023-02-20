@@ -96,3 +96,9 @@ class TFTGameActions:
             return True
         else:
             return False
+def main():
+    champs = _utils.read_champions()
+    print(champs)
+
+if __name__ == "__main__":
+    main()
