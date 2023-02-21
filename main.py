@@ -9,7 +9,7 @@ from _utils import *
 def main():
     # Set up the environment and network
     env = TFTEnvironment(get_game_state())
-    recommender = TFTRecommender(1, 1, None)
+    recommender = TFTRecommender(1, 1, 1000)
     num_episodes = 1000
 
     # Set up hyperparameters

@@ -92,7 +92,7 @@ class DQNAgent(nn.Module):
 class DQNAgentTrainer:
     def __init__(self, input_size, output_size, learning_rate=0.001, discount_factor=0.99, replay_memory_size=10000, batch_size=32):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
+        print(input_size, output_size, self.device)
         self.agent = DQNAgent(input_size, output_size).to(self.device)
         self.target_agent = DQNAgent(input_size, output_size).to(self.device)
         self.target_agent.load_state_dict(self.agent.state_dict())
@@ -163,8 +163,9 @@ class ReplayBuffer:
     def __len__(self):
         return len(self.buffer)
 
-class TFTRecommender:
-    def __init__(self, input_dim, hidden_dim, n_actions, device='cpu'):
+class TFTRecommender(nn.Module):
+    def __init__(self, n_heads, n_layers, n_actions, device='cpu'):
+        super(TFTRecommender, self).__init__()
         self.transformer = Transformer(input_dim=256, hidden_dim=512, num_layers=6, num_heads=8).to(device)
         self.rnn = RNN(input_dim=256, hidden_dim=512, num_layers=8, dropout=0.2).to(device)
         self.dqn = DQNAgent(self.rnn.hidden_dim, n_actions).to(device)
