@@ -2,9 +2,9 @@ import torch
 import torch.nn as nn
 import numpy as np
 
-from env import *
-from neuralnetwork import *
-from _utils import *
+from envs.env import *
+from models.neuralnetwork import *
+from utils._utils import *
 
 def main():
     # Set up the environment and network
