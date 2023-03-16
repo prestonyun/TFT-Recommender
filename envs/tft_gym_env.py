@@ -2,6 +2,14 @@ import gymnasium as gym
 from gym import spaces
 from utils.constants import Constants, SynergyTiers
 
+
+# dummy variables to get rid of the yellow squiggles:
+n_action_types = 3
+n_champions = 1
+n_positions = 1
+n_items = 1
+max_actions = 3
+
 single_action_space = spaces.Dict({
     'action_type': spaces.Discrete(n_action_types),
     'params': spaces.Tuple((spaces.Discrete(n_champions), spaces.Discrete(n_positions), spaces.Discrete(n_items))),
