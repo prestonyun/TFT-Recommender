@@ -43,3 +43,17 @@ class GameBoard(Enum):
     POSITION_19 = 19,
     POSITION_20 = 20
     
+class SynergyTiers(Enum):
+    # Synergies
+    ASSASSINS = 3,
+    BLADEMASTER = 3,
+    BRAWLERS = 3,
+    DEMON = 3,
+    DRAGON = 3,
+    ELEMENTALIST = 3,
+    GUARDIAN = 3,
+    KNIGHT = 3,
+    MAGE = 3,
+    SHAPESHIFTER = 3,
+    SORCERER = 3,
+    YORDLE = 3
