@@ -1,6 +1,6 @@
 import gymnasium as gym
 from gym import spaces
-from utils.constants import Constants
+from utils.constants import Constants, SynergyTiers
 
 class TFTGymEnv(gym.Env):
     def __init__(self):
@@ -12,6 +12,8 @@ class TFTGymEnv(gym.Env):
             'experience': spaces.Discrete(100),
             'experience_to_next_level': spaces.Discrete(100),
             'gold': spaces.Discrete(500),
+            'active_synergies': spaces.Dict({synergy: spaces.Discrete(max_tier + 1) for synergy, max_tier in SynergyTiers.__members__.items()}),
+            "opponents": spaces.Box(low=0, high=1, shape=(Constants.NUM_OPPONENTS, OPPONENT_FEATURES), dtype=float),
             "shop": spaces.Tuple([spaces.Dict({
                 "champion_id": spaces.Discrete(Constants.MAX_CHAMPION_ID),
                 "champion_cost": spaces.Discrete(Constants.MAX_CHAMPION_COST)
@@ -26,7 +28,6 @@ class TFTGymEnv(gym.Env):
                 "champion_level": spaces.Discrete(Constants.MAX_CHAMPION_LEVEL),
                 "item_ids": spaces.Box(low=0, high=Constants.MAX_ITEM_ID, shape=(Constants.MAX_ITEMS_PER_CHAMPION,), dtype=int)
             })] * Constants.BENCH_SIZE),
-            "opponents": spaces.Box(low=0, high=1, shape=(Constants.NUM_OPPONENTS, OPPONENT_FEATURES), dtype=float),
         })
 
 
@@ -45,6 +46,8 @@ class TFTGymEnv(gym.Env):
 
 
     def reset(self):
+        # Initialize opponents
+        # Initialize shop, board, bench, player
         return 0
 
     def render(self, mode='human', close=False):
