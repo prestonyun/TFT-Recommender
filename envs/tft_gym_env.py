@@ -2,10 +2,15 @@ import gymnasium as gym
 from gym import spaces
 from utils.constants import Constants, SynergyTiers
 
+single_action_space = spaces.Dict({
+    'action_type': spaces.Discrete(n_action_types),
+    'params': spaces.Tuple((spaces.Discrete(n_champions), spaces.Discrete(n_positions), spaces.Discrete(n_items))),
+})
+
 class TFTGymEnv(gym.Env):
     def __init__(self):
         OPPONENT_FEATURES = None
-        self.action_space = spaces.Discrete(Constants.NUM_ACTIONS)
+        self.action_space = spaces.Tuple([single_action_space for _ in range(max_actions)])
         self.observation_space = spaces.Dict({
             'health': spaces.Discrete(100),
             'level': spaces.Discrete(10),
@@ -31,9 +36,12 @@ class TFTGymEnv(gym.Env):
         })
 
 
-    def step(self, action):
-        # Apply the action
-        ...
+    def step(self, actions):
+        # Apply the actions
+        for action in actions:
+            action_type, params = action['action_type'], action['params']
+            if action_type == 0:
+                pass
 
         # Calculate the reward
         reward = ...

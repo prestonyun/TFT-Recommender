@@ -57,3 +57,10 @@ class SynergyTiers(Enum):
     SHAPESHIFTER = 3,
     SORCERER = 3,
     YORDLE = 3
+
+class Actions(Enum):
+    BUY_CHAMPION = 0,
+    SELL_CHAMPION = 1,
+    BUY_EXPERIENCE = 2,
+    REFRESH_SHOP = 3,
+    
