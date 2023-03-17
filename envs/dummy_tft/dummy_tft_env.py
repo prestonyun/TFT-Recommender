@@ -8,6 +8,7 @@ import random
         # Define actions
         # Level up mechanic
         # Reward function
+        # Restore board/bench state after 'combine_champions' action
 
 
 class Items(Enum):
@@ -103,29 +104,42 @@ class DummyTFTEnv(gym.Env):
         
     def combine_champions(self, all_owned_champs):
         num_copies = {i:all_owned_champs.count(i) for i in all_owned_champs}
+        stronger_champion = None
         if num_copies[Champions.CHAMPION1STAR1COST] == 3:
             stronger_champion = Champions.CHAMPION2STAR1COST
+            all_owned_champs.remove(Champions.CHAMPION1STAR1COST)
+            all_owned_champs.remove(Champions.CHAMPION1STAR1COST)
+            all_owned_champs.remove(Champions.CHAMPION1STAR1COST)
         elif num_copies[Champions.CHAMPION1STAR2COST] == 3:
             stronger_champion = Champions.CHAMPION2STAR2COST
+            all_owned_champs.remove(Champions.CHAMPION1STAR2COST)
+            all_owned_champs.remove(Champions.CHAMPION1STAR2COST)
+            all_owned_champs.remove(Champions.CHAMPION1STAR2COST)
         elif num_copies[Champions.CHAMPION1STAR3COST] == 3:
             stronger_champion = Champions.CHAMPION2STAR3COST
+            all_owned_champs.remove(Champions.CHAMPION1STAR3COST)
+            all_owned_champs.remove(Champions.CHAMPION1STAR3COST)
+            all_owned_champs.remove(Champions.CHAMPION1STAR3COST)
         elif num_copies[Champions.CHAMPION2STAR1COST] == 3:
             stronger_champion = Champions.CHAMPION3STAR1COST
+            all_owned_champs.remove(Champions.CHAMPION2STAR1COST)
+            all_owned_champs.remove(Champions.CHAMPION2STAR1COST)
+            all_owned_champs.remove(Champions.CHAMPION2STAR1COST)
         elif num_copies[Champions.CHAMPION2STAR2COST] == 3:
             stronger_champion = Champions.CHAMPION3STAR2COST
+            all_owned_champs.remove(Champions.CHAMPION2STAR2COST)
+            all_owned_champs.remove(Champions.CHAMPION2STAR2COST)
+            all_owned_champs.remove(Champions.CHAMPION2STAR2COST)
         elif num_copies[Champions.CHAMPION2STAR3COST] == 3:
             stronger_champion = Champions.CHAMPION3STAR3COST
-        else:
-            return all_owned_champs
+            all_owned_champs.remove(Champions.CHAMPION2STAR3COST)
+            all_owned_champs.remove(Champions.CHAMPION2STAR3COST)
+            all_owned_champs.remove(Champions.CHAMPION2STAR3COST)
         
-        # Remove the 3 weaker champions from the original array
-
-        #for i in range(len(all_owned_champs)):
-            
-        # Add the stronger champion to the array
-        all_owned_champs.append(stronger_champion)
+        if stronger_champion:
+            all_owned_champs.append(stronger_champion)
+            return self.combine_champions(all_owned_champs)
         return all_owned_champs
-
 
     def step(self, action):
         action_type, shop_idx, board_idx = action
