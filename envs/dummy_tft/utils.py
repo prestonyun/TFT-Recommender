@@ -1,4 +1,3 @@
-import numpy as np
 from enum import Enum
 
 class Items(Enum):
@@ -22,3 +21,12 @@ class Champions(Enum):
     CHAMPION3STAR1COST = {'power_level': 3, 'id': 7, 'cost': 8}
     CHAMPION3STAR2COST = {'power_level': 4, 'id': 8, 'cost': 17}
     CHAMPION3STAR3COST = {'power_level': 5, 'id': 9, 'cost': 26}
+
+class Actions(Enum):
+    # 0: Buy champion, 1: Sell champion, 2: Buy experience, 3: Place item, 4: Move champion, 5: Skip
+    BUY_CHAMPION = 0
+    SELL_CHAMPION = 1
+    BUY_EXPERIENCE = 2
+    PLACE_ITEM = 3
+    MOVE_CHAMPION = 4
+    SKIP = 5
