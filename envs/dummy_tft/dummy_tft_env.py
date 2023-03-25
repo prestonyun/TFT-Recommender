@@ -118,14 +118,24 @@ class DummyTFTEnv(gym.Env):
         elif action_type == 1:  # Place champion
             self.observation['board'][board_idx] = self.observation['board'][shop_idx]
 
-        # Calculate reward based on the total power level on the board
-        reward = np.sum(self.observation['board'])
+        # Determine the winner of the fight based on the total power level of the boards
+        player_power_level = np.sum(self.observation['board'])
+        opponent_power_level = np.random.randint(1, 11)  # random power level for the opponent's board
+        if player_power_level > opponent_power_level:
+            reward = 1  # player wins
+        elif player_power_level < opponent_power_level:
+            reward = -1  # player loses
+        else:
+            reward = 0  # draw
 
         # Check if the game is done (board is full)
         done = not np.any(self.observation['board'] == 0)
 
         # Update the shop
         self.observation['shop'] = np.random.randint(0, len(self.champions), size=self.shop_size)
+
+        # Calculate reward based on the total power level on the board
+        reward = np.sum(self.observation['board'])
 
         return self.observation, reward, done, {}
 
